@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1050066422494",
+    "project_id": "read-fab72",
+    "storage_bucket": "read-fab72.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1050066422494:android:d3ef336896144db195504f",
+        "android_client_info": {
+          "package_name": "com.example.read"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCks4Y9pcGilbNf5PC3ytXj8peyKNpRwYc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
