@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:read/constants/colors.dart';
+import 'package:read/screen/book.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -39,7 +40,13 @@ class _HomepageState extends State<Homepage> {
       Scaffold(
         backgroundColor: transparent,
         appBar: AppBar(
-          backgroundColor: white,
+          actions: [
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.search_rounded),
+            ),
+          ],
+          backgroundColor: white.withOpacity(0.8),
           leading: IconButton(
             onPressed: () {},
             icon: const Icon(Icons.menu),
@@ -48,11 +55,14 @@ class _HomepageState extends State<Homepage> {
         body: Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [white, Colors.white38], // Colors for the gradient
+              colors: [
+                white.withOpacity(0.8),
+                Colors.white38
+              ], // Colors for the gradient
             ),
           ),
           child: SafeArea(
@@ -88,35 +98,35 @@ class _HomepageState extends State<Homepage> {
                     ],
                   ),
 
-                  const SizedBox(
-                    height: 25,
-                  ),
+                  // const SizedBox(
+                  //   height: 25,
+                  // ),
 
                   //Search Bar
-                  TextFormField(
-                    style: GoogleFonts.poppins(),
-                    cursorColor: primaryColor,
-                    decoration: InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: const BorderSide(
-                          color: primaryColor,
-                        ),
-                      ),
-                      prefixIcon: const Icon(Icons.search_rounded),
-                      hintText: "Search...",
-                      hintStyle: GoogleFonts.poppins(
-                        textStyle: const TextStyle(
-                          fontSize: 18,
-                        ),
-                      ),
-                      filled: true,
-                      fillColor: primaryColor.withOpacity(0.3),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                    ),
-                  ),
+                  // TextFormField(
+                  //   style: GoogleFonts.poppins(),
+                  //   cursorColor: primaryColor,
+                  //   decoration: InputDecoration(
+                  //     focusedBorder: OutlineInputBorder(
+                  //       borderRadius: BorderRadius.circular(25),
+                  //       borderSide: const BorderSide(
+                  //         color: primaryColor,
+                  //       ),
+                  //     ),
+                  //     prefixIcon: const Icon(Icons.search_rounded),
+                  //     hintText: "Search...",
+                  //     hintStyle: GoogleFonts.poppins(
+                  //       textStyle: const TextStyle(
+                  //         fontSize: 18,
+                  //       ),
+                  //     ),
+                  //     filled: true,
+                  //     fillColor: primaryColor.withOpacity(0.3),
+                  //     border: OutlineInputBorder(
+                  //       borderRadius: BorderRadius.circular(25),
+                  //     ),
+                  //   ),
+                  // ),
 
                   const SizedBox(
                     height: 20,
@@ -291,37 +301,49 @@ class _HomepageState extends State<Homepage> {
 
   // Function to build a container for each book
   Widget _buildBookContainer(String title, String imageUrl) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Image(
-            image: NetworkImage(
-              imageUrl,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Book(
+              name: title,
             ),
-            fit: BoxFit.contain,
-            height: 150,
           ),
-          const SizedBox(height: 10),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
-              textStyle: const TextStyle(
-                fontWeight: FontWeight.w600,
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Image(
+              image: NetworkImage(
+                imageUrl,
+              ),
+              fit: BoxFit.contain,
+              height: 150,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                textStyle: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
