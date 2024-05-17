@@ -40,8 +40,8 @@ class _BookState extends State<Book> {
           print(doc.id);
           setState(() {
             bookSnapshot = doc as DocumentSnapshot<Map<String, dynamic>>?;
+            downloadUrl = bookSnapshot!.data()?['file'];
           });
-          fetchDownloadUrl(bookSnapshot!.data()?['file']);
           break;
         }
       }
@@ -50,15 +50,12 @@ class _BookState extends State<Book> {
     }
   }
 
-  Future<void> fetchDownloadUrl(String filePath) async {
-    try {
-      String url =
-          await FirebaseStorage.instance.refFromURL(filePath).getDownloadURL();
-      setState(() {
-        downloadUrl = url;
-      });
-    } catch (e) {
-      print('Error fetching download URL: $e');
+  Future<void> _launchURL() async {
+    final url = Uri.parse(bookSnapshot?.data()?['file']);
+    if (url != null && await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      print('Could not launch $url');
     }
   }
 
@@ -87,7 +84,7 @@ class _BookState extends State<Book> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   GestureDetector(
-                    onTap: () => _openPDF(context),
+                    onTap: () => _launchURL(),
                     child: Container(
                       height: 60,
                       width: MediaQuery.of(context).size.width * 3 / 4 - 40,
@@ -167,9 +164,6 @@ class _BookState extends State<Book> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 10,
                     ),
                     Text(
                       "- " + bookSnapshot!.data()?["author"],
