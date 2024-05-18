@@ -50,25 +50,10 @@ class _BookState extends State<Book> {
     }
   }
 
-  Future<void> _launchURL() async {
-    final url = Uri.parse(bookSnapshot?.data()?['file']);
-    if (url != null && await canLaunchUrl(url)) {
-      await launchUrl(url);
-    } else {
-      print('Could not launch $url');
-    }
-  }
-
-  void _openPDF(BuildContext context) {
-    if (downloadUrl != null) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PDFViewerScreen(url: downloadUrl!),
-        ),
-      );
-    } else {
-      print('No URL found in document.');
+  Future<void> _launchUrl() async {
+    Uri url = Uri.parse(bookSnapshot!.data()?["file"]);
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $url');
     }
   }
 
@@ -76,111 +61,129 @@ class _BookState extends State<Book> {
   Widget build(BuildContext context) {
     return bookSnapshot == null
         ? const Scaffold(body: Center(child: CircularProgressIndicator()))
-        : Scaffold(
-            backgroundColor: white,
-            bottomNavigationBar: Padding(
-              padding: const EdgeInsets.only(bottom: 10, left: 10, right: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: () => _launchURL(),
-                    child: Container(
-                      height: 60,
-                      width: MediaQuery.of(context).size.width * 3 / 4 - 40,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: primaryColor,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "download.",
-                            style: GoogleFonts.poppins(
-                              textStyle: const TextStyle(
-                                fontSize: 25,
-                                color: white,
-                                fontWeight: FontWeight.w600,
+        : Stack(
+            children: [
+              Container(
+                height: MediaQuery.of(context).size.height,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("lib/assets/back2.png"),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              Scaffold(
+                backgroundColor: white.withOpacity(0.8),
+                bottomNavigationBar: Padding(
+                  padding:
+                      const EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () => _launchUrl(),
+                        child: Container(
+                          height: 60,
+                          width: MediaQuery.of(context).size.width * 3 / 4 - 40,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: primaryColor,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "download.",
+                                style: GoogleFonts.poppins(
+                                  textStyle: const TextStyle(
+                                    fontSize: 25,
+                                    color: white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Container(
+                        height: 60,
+                        width: MediaQuery.of(context).size.width / 4,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.black54,
+                          ),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: const Icon(
+                          Icons.share,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                appBar: AppBar(
+                  toolbarHeight: 80,
+                  surfaceTintColor: transparent,
+                  backgroundColor: transparent,
+                  leading: IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                    ),
+                  ),
+                  automaticallyImplyLeading: false,
+                ),
+                body: SingleChildScrollView(
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.only(left: 15, right: 15, bottom: 15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width - 30,
+                          height: MediaQuery.of(context).size.height / 3,
+                          child: Image(
+                            image: NetworkImage(
+                              bookSnapshot!.data()?["imageUrl"],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                        Text(
+                          bookSnapshot!.data()?["name"],
+                          style: GoogleFonts.poppins(
+                            textStyle: TextStyle(
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 0.07,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          "- " + bookSnapshot!.data()?["author"],
+                          style: GoogleFonts.poppins(
+                              textStyle:
+                                  TextStyle(fontWeight: FontWeight.bold)),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          bookSnapshot!.data()?['about'],
+                          style: GoogleFonts.poppins(),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Container(
-                    height: 60,
-                    width: MediaQuery.of(context).size.width / 4,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.black54,
-                      ),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: const Icon(
-                      Icons.share,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            appBar: AppBar(
-              toolbarHeight: 80,
-              backgroundColor: white,
-              leading: IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: const Icon(
-                  Icons.arrow_back_ios_new_rounded,
                 ),
               ),
-              automaticallyImplyLeading: false,
-            ),
-            body: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 15, right: 15, bottom: 15),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width - 30,
-                      height: MediaQuery.of(context).size.height / 3,
-                      child: Image(
-                        image: NetworkImage(
-                          bookSnapshot!.data()?["imageUrl"],
-                        ),
-                      ),
-                    ),
-                    Text(
-                      bookSnapshot!.data()?["name"],
-                      style: GoogleFonts.poppins(
-                        textStyle: TextStyle(
-                          fontSize: MediaQuery.of(context).size.width * 0.07,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      "- " + bookSnapshot!.data()?["author"],
-                      style: GoogleFonts.poppins(
-                          textStyle: TextStyle(fontWeight: FontWeight.bold)),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      bookSnapshot!.data()?['about'],
-                      style: GoogleFonts.poppins(),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            ],
           );
   }
 }

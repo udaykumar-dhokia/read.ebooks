@@ -24,6 +24,100 @@ class _HomepageState extends State<Homepage> {
   }
 
   String category = "All";
+  final TextEditingController _searchController = TextEditingController();
+  List<DocumentSnapshot> _searchResults = [];
+
+  void _showSearchBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          color: white,
+          height: MediaQuery.of(context).size.height / 1.2,
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    labelText: 'Search for books',
+                    labelStyle: GoogleFonts.poppins(
+                      textStyle: const TextStyle(
+                        color: black,
+                      ),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: primaryColor),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  onChanged: (value) {
+                    _searchBooks(value);
+                  },
+                ),
+              ),
+              const SizedBox(height: 10),
+              Expanded(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _searchResults.length,
+                  itemBuilder: (context, index) {
+                    final book =
+                        _searchResults[index].data() as Map<String, dynamic>;
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Book(
+                              name: book["name"],
+                            ),
+                          ),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 20),
+                        child: ListTile(
+                          leading: Image(image: NetworkImage(book["imageUrl"])),
+                          title: Text(book['name'] ?? 'No Title'),
+                          subtitle: Text(book['author'] ?? 'No Author'),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+      isScrollControlled: true,
+    );
+  }
+
+  void _searchBooks(String query) async {
+    if (query.isEmpty) {
+      setState(() {
+        _searchResults = [];
+      });
+      return;
+    }
+
+    final results = await FirebaseFirestore.instance.collection('ebooks').get();
+
+    setState(() {
+      _searchResults = results.docs.where((doc) {
+        final title = doc['name'].toString().toLowerCase();
+        return title.contains(query.toLowerCase());
+      }).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,14 +136,19 @@ class _HomepageState extends State<Homepage> {
         appBar: AppBar(
           actions: [
             IconButton(
-              onPressed: () {},
+              onPressed: () => _showSearchBottomSheet(context),
               icon: const Icon(Icons.search_rounded),
             ),
           ],
           backgroundColor: white.withOpacity(0.8),
-          leading: IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.menu),
+          title: Text(
+            "read.",
+            style: GoogleFonts.poppins(
+              textStyle: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: MediaQuery.of(context).size.width * 0.08,
+              ),
+            ),
           ),
         ),
         body: Container(
