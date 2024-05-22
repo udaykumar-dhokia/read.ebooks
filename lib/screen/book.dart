@@ -84,7 +84,7 @@ class _BookState extends State<Book> {
                         onTap: () => _launchUrl(),
                         child: Container(
                           height: 60,
-                          width: MediaQuery.of(context).size.width * 3 / 4 - 40,
+                          width: MediaQuery.of(context).size.width - 20,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(15),
                             color: primaryColor,
@@ -106,22 +106,22 @@ class _BookState extends State<Book> {
                           ),
                         ),
                       ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Container(
-                        height: 60,
-                        width: MediaQuery.of(context).size.width / 4,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.black54,
-                          ),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: const Icon(
-                          Icons.share,
-                        ),
-                      ),
+                      // const SizedBox(
+                      //   width: 10,
+                      // ),
+                      // Container(
+                      //   height: 60,
+                      //   width: MediaQuery.of(context).size.width / 4,
+                      //   decoration: BoxDecoration(
+                      //     border: Border.all(
+                      //       color: Colors.black54,
+                      //     ),
+                      //     borderRadius: BorderRadius.circular(15),
+                      //   ),
+                      //   child: const Icon(
+                      //     Icons.share,
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),

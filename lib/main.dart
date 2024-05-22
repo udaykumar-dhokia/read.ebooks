@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -33,14 +34,37 @@ class Splash extends StatefulWidget {
 }
 
 class _SplashState extends State<Splash> {
+  bool _isConnected = true;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    Timer(const Duration(seconds: 2), () {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => const Homepage()));
-    });
+    _checkInternetConnection();
+  }
+
+  Future<void> _checkInternetConnection() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    print(connectivityResult);
+    if (connectivityResult[0] == ConnectivityResult.none) {
+      setState(() {
+        _isConnected = false;
+      });
+    } else {
+      setState(() {
+        _isConnected = true;
+      });
+      Timer(const Duration(seconds: 2), () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const Homepage()),
+        );
+      });
+    }
+  }
+
+  void retry() {
+    _checkInternetConnection();
   }
 
   @override
@@ -55,29 +79,65 @@ class _SplashState extends State<Splash> {
           ),
         ),
       ),
-      Scaffold(
-        backgroundColor: transparent,
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                "read.",
-                style: GoogleFonts.poppins(
-                    textStyle: const TextStyle(
-                        fontSize: 50, fontWeight: FontWeight.bold)),
+      !_isConnected
+          ? Scaffold(
+              backgroundColor: transparent,
+              body: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.wifi_off_rounded,
+                  ),
+                  Center(
+                    child: Text(
+                      "No internet connection.",
+                      style: GoogleFonts.poppins(
+                        textStyle: TextStyle(
+                          fontSize: MediaQuery.of(context).size.width * 0.045,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  FloatingActionButton(
+                    onPressed: () {
+                      retry();
+                    },
+                    backgroundColor: primaryColor,
+                    child: const Icon(
+                      Icons.restart_alt_rounded,
+                      color: white,
+                    ),
+                  )
+                ],
               ),
-              Text(
-                "Open a world of books, right at your fingertips",
-                style: GoogleFonts.poppins(
-                    textStyle: TextStyle(
-                        fontSize: MediaQuery.of(context).size.width * 0.038)),
-              )
-            ],
-          ),
-        ),
-      ),
+            )
+          : Scaffold(
+              backgroundColor: transparent,
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "read.",
+                      style: GoogleFonts.poppins(
+                          textStyle: const TextStyle(
+                              fontSize: 50, fontWeight: FontWeight.bold)),
+                    ),
+                    Text(
+                      "Open a world of books, right at your fingertips",
+                      style: GoogleFonts.poppins(
+                          textStyle: TextStyle(
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 0.038)),
+                    )
+                  ],
+                ),
+              ),
+            ),
     ]);
   }
 }

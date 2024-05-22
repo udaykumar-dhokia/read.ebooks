@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:read/constants/colors.dart';
 import 'package:read/screen/book.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -119,6 +120,18 @@ class _HomepageState extends State<Homepage> {
     });
   }
 
+  Future<void> _launchEmail() async {
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: 'udaykumardhokia@gmail.com',
+      query: 'subject=Request&body=Hello, I would like to request...',
+    );
+
+    if (!await launchUrl(emailUri, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $emailUri');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
@@ -136,8 +149,18 @@ class _HomepageState extends State<Homepage> {
         appBar: AppBar(
           actions: [
             IconButton(
+              tooltip: "Search",
               onPressed: () => _showSearchBottomSheet(context),
               icon: const Icon(Icons.search_rounded),
+            ),
+            IconButton(
+              tooltip: "Request",
+              onPressed: () {
+                _launchEmail();
+              },
+              icon: const Icon(
+                Icons.menu_book_rounded,
+              ),
             ),
           ],
           backgroundColor: white.withOpacity(0.8),
@@ -330,7 +353,7 @@ class _HomepageState extends State<Homepage> {
                               const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
                             crossAxisSpacing: 10,
-                            mainAxisSpacing: 10,
+                            mainAxisSpacing: 30,
                           ),
                           itemCount: snapshot.data!.docs.length,
                           shrinkWrap: true,
